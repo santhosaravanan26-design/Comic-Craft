@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComicCraft – AI Comic Story Creator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="comic-bg">
+
+    <div class="comic-container">
+        <!-- Comic Header Banner -->
+        <header class="comic-header">
+            <div class="comic-badge">AI COMIC STUDIO</div>
+            <h1 class="comic-title">COMICCRAFT</h1>
+            <p class="comic-subtitle">Turn your imagination into an AI-powered 5-panel comic.</p>
+        </header>
+
+        {% if error_message %}
+        <div class="alert-box error">
+            <span class="alert-icon">!</span>
+            <div>
+                <strong>Action Needed:</strong> {{ error_message }}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not has_api_key %}
+        <div class="alert-box warning">
+            <span class="alert-icon">*</span>
+            <div>
+                <strong>Note:</strong> GEMINI_API_KEY is not detected in your environment. ComicCraft will use its built-in illustrated fallback engine so you can still experience the full 5-panel comic flow. To enable live Gemini AI generation, add your API key to <code>.env</code>.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quick Inspiration Bar -->
+        <div class="inspiration-bar">
+            <span class="inspiration-title">Quick Story Ideas:</span>
+            <button type="button" class="preset-pill" onclick="loadPreset('fox')">The Forest Portal</button>
+            <button type="button" class="preset-pill" onclick="loadPreset('space')">Cosmic Scavenger</button>
+            <button type="button" class="preset-pill" onclick="loadPreset('cyber')">Neon Detective</button>
+            <button type="button" class="preset-pill" onclick="loadPreset('academy')">The Wizard Apprentice</button>
+        </div>
+
+        <!-- Main Creation Form -->
+        <div class="comic-card">
+            <form id="comicForm" action="/generate" method="POST" onsubmit="showLoadingState()">
+                
+                <div class="form-group">
+                    <label for="story_prompt" class="comic-label">
+                        1. Story Prompt <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        id="story_prompt" 
+                        name="story_prompt" 
+                        class="comic-textarea" 
+                        rows="4" 
+                        required 
+                        placeholder="e.g. A brave fox discovers a glowing mysterious portal hidden inside an ancient enchanted forest, leading to a forgotten realm of starlight.">{{ story_prompt or '' }}</textarea>
+                    <span class="field-hint">Describe the core adventure, conflict, or goal of your story.</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-half">
+                        <label for="character_name" class="comic-label">
+                            2. Main Character Name <span class="required">*</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            id="character_name" 
+                            name="character_name" 
+                            class="comic-input" 
+                            required 
+                            placeholder="e.g. Rusty the Fox"
+                            value="{{ character_name or '' }}">
+                    </div>
+
+                    <div class="form-group col-half">
+                        <label for="setting" class="comic-label">
+                            3. Setting
+                        </label>
+                        <select id="setting" name="setting" class="comic-select">
+                            <option value="Forest" selected>Forest</option>
+                            <option value="School">School</option>
+                            <option value="City">City</option>
+                            <option value="Space">Space</option>
+                            <option value="Fantasy Kingdom">Fantasy Kingdom</option>
+                            <option value="Custom">Custom</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-half">
+                        <label for="tone" class="comic-label">
+                            4. Story Tone
+                        </label>
+                        <select id="tone" name="tone" class="comic-select">
+                            <option value="Adventure" selected>Adventure</option>
+                            <option value="Funny">Funny</option>
+                            <option value="Dramatic">Dramatic</option>
+                            <option value="Light-hearted">Light-hearted</option>
+                            <option value="Poetic">Poetic</option>
+                            <option value="Mysterious">Mysterious</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-half">
+                        <label for="art_style" class="comic-label">
+                            5. Art Style
+                        </label>
+                        <select id="art_style" name="art_style" class="comic-select">
+                            <option value="Comic Book" selected>Comic Book</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Cartoon">Cartoon</option>
+                            <option value="Pixel Art">Pixel Art</option>
+                            <option value="Realistic">Realistic</option>
+                            <option value="Fantasy Illustration">Fantasy Illustration</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-half">
+                        <label for="gemini_model" class="comic-label">
+                            6. Gemini AI Model
+                        </label>
+                        <select id="gemini_model" name="gemini_model" class="comic-select">
+                            <option value="gemini-flash-latest" selected>Gemini Flash Latest (Fast & Reliable)</option>
+                            <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (High Availability)</option>
+                            <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro (Deep Reasoning)</option>
+                            <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
+                        </select>
+                        <span class="field-hint">Automatic failover to Flash Lite enabled if a model experiences high demand spikes.</span>
+                    </div>
+                </div>
+
+                <div class="button-wrapper">
+                    <button type="submit" id="submitBtn" class="comic-btn-primary">
+                        <span class="btn-star">★</span> CREATE MY COMIC <span class="btn-star">★</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Loading State Modal/Overlay -->
+            <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+                <div class="loading-modal">
+                    <div class="comic-spinner"></div>
+                    <h2 class="loading-title">CRAFTING YOUR COMIC...</h2>
+                    <p class="loading-step" id="loadingStepText">1. Establishing character consistency profile...</p>
+                    <div class="loading-progress-bar">
+                        <div class="loading-progress-fill" id="loadingProgress"></div>
+                    </div>
+                    <p class="loading-subtext">Gemini is structuring a 5-panel dramatic arc, scripting dialogue, and generating panel illustrations.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="comic-footer">
+            <p>ComicCraft AI &bull; Powered by Google Gemini API &bull; 5-Panel Visual Storytelling Architecture</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

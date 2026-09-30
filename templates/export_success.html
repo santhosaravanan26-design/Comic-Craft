@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comic Export Successful – ComicCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="comic-bg">
+
+    <div class="comic-container" style="max-width: 680px; text-align: center; margin-top: 50px;">
+        
+        <div class="comic-card">
+            <div class="success-badge">★ EXPORT READY ★</div>
+            <h1 class="comic-title" style="font-size: 2.8rem; margin: 15px 0;">YOUR COMIC BOOK IS READY!</h1>
+            <p class="comic-subtitle" style="margin-bottom: 25px;">
+                Your 5-panel comic has been formatted into a high-resolution, printable PDF with panels, speech bubbles, and captions.
+            </p>
+
+            <div class="button-wrapper" style="flex-direction: column; gap: 15px;">
+                {% if pdf_path %}
+                <a href="{{ pdf_path }}" download class="comic-btn-primary" style="font-size: 1.3rem;">
+                    ⬇ Download Comic PDF
+                </a>
+                <a href="{{ pdf_path }}" target="_blank" class="comic-btn-secondary">
+                    🔍 View PDF in Browser
+                </a>
+                {% endif %}
+                <a href="/" class="comic-btn-secondary">
+                    + Create Another Comic
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

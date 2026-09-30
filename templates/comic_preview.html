@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ comic.story_title }} – ComicCraft Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="comic-bg">
+
+    <div class="comic-container">
+        
+        <!-- Story Header -->
+        <header class="comic-preview-header">
+            <div class="badge-row">
+                <span class="comic-badge">{{ comic.art_style.upper() }}</span>
+                <span class="comic-badge tone-badge">{{ comic.tone.upper() }}</span>
+                <span class="comic-badge setting-badge">{{ comic.setting.upper() }}</span>
+            </div>
+            <h1 class="comic-preview-title">{{ comic.story_title }}</h1>
+            <p class="character-credit">Starring <strong>{{ comic.character_profile.name }}</strong> &bull; Character Identity: {{ comic.character_profile.appearance }}</p>
+            
+            <!-- Action Toolbar -->
+            <div class="action-toolbar">
+                {% if comic.pdf_path %}
+                <a href="{{ comic.pdf_path }}" download class="comic-btn-primary download-btn">
+                    <span>⬇</span> Download Your Comic as PDF
+                </a>
+                {% endif %}
+                <a href="/" class="comic-btn-secondary">
+                    <span>↻</span> Create Another Comic
+                </a>
+            </div>
+        </header>
+
+        <!-- 5 Comic Panels Strip / Grid -->
+        <div class="comic-panels-grid">
+            {% for panel in comic.panels %}
+            <article class="comic-panel-card">
+                
+                <!-- Panel Header -->
+                <div class="panel-card-header">
+                    <div class="panel-num-tag">PANEL {{ panel.panel_number }}</div>
+                    <h3 class="panel-title">{{ panel.title }}</h3>
+                    <div class="panel-mood-tag">{{ panel.mood }}</div>
+                </div>
+
+                <!-- Panel Artwork Frame -->
+                <div class="panel-image-wrapper">
+                    {% if panel.image_url %}
+                    <img src="{{ panel.image_url }}" alt="Comic Panel {{ panel.panel_number }}: {{ panel.title }}" class="panel-img" loading="lazy">
+                    {% else %}
+                    <div class="panel-img-placeholder">Panel Artwork Generated</div>
+                    {% endif %}
+                </div>
+
+                <!-- Panel Narrative Story Box -->
+                <div class="panel-story-box">
+                    
+                    <!-- Vintage Comic Caption -->
+                    {% if panel.caption %}
+                    <div class="panel-caption-box">
+                        <span class="caption-marker">CAPTION:</span> {{ panel.caption }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Third-Person Narration -->
+                    {% if panel.narration %}
+                    <p class="panel-narration">{{ panel.narration }}</p>
+                    {% endif %}
+
+                    <!-- Spoken Dialogues -->
+                    {% if panel.dialogue %}
+                    <div class="panel-dialogue-list">
+                        {% for d in panel.dialogue %}
+                        <div class="speech-bubble">
+                            <span class="speech-speaker">{{ d.character }}:</span>
+                            <span class="speech-text">"{{ d.text }}"</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Scene Director Detail (Collapsible / Subtle) -->
+                    <div class="panel-scene-meta">
+                        <small><strong>Scene:</strong> {{ panel.scene_description }}</small>
+                    </div>
+
+                </div>
+
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="bottom-action-bar">
+            {% if comic.pdf_path %}
+            <a href="{{ comic.pdf_path }}" download class="comic-btn-primary download-btn">
+                <span>⬇</span> Download Your Comic as PDF
+            </a>
+            {% endif %}
+            <a href="/" class="comic-btn-secondary">
+                <span>↻</span> Create Another Comic
+            </a>
+        </div>
+
+        <footer class="comic-footer">
+            <p>ComicCraft AI &bull; Created with Google Gemini API &bull; 5-Panel Comic Strip</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
